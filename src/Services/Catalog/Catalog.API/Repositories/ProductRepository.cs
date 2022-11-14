@@ -1,7 +1,5 @@
 ﻿using Catalog.API.Data;
 using Catalog.API.Entities;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Catalog.API.IRepository

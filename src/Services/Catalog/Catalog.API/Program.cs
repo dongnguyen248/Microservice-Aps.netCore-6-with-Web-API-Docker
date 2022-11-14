@@ -1,5 +1,6 @@
 using Catalog.API.Data;
 using Catalog.API.IRepository;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,11 @@ builder.Services.Configure<ProductStoreDatabaseSetting>(
 builder.Configuration.GetSection("ProductStoreDatabase"));
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductContext,ProductStoreDatabaseSetting>();
-builder.Logging.AddFile("D:\\MicroserviceAspdotnetCore\\src\\Services\\Catalog\\Catalog.APILogs\\myapp-{Date}.txt");
+
+var _loggrer = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).Enrich
+                                                 .FromLogContext()
+                                                 .CreateLogger();
+builder.Logging.AddSerilog(_loggrer);
 
 var app = builder.Build();
 
