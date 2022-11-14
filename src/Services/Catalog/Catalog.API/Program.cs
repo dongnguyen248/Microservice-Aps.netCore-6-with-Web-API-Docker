@@ -5,11 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Host.ConfigureLogging(logging =>
-{
-    logging.ClearProviders();
-    logging.AddConsole();
-});
+
 
 builder.Services.AddControllers();
 
@@ -18,8 +14,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<ProductStoreDatabaseSetting>(
-    builder.Configuration.GetSection("ProductStoreDatabase"));
+builder.Configuration.GetSection("ProductStoreDatabase"));
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<IProductContext,ProductStoreDatabaseSetting>();
+builder.Logging.AddFile("D:\\MicroserviceAspdotnetCore\\src\\Services\\Catalog\\Catalog.APILogs\\myapp-{Date}.txt");
 
 var app = builder.Build();
 

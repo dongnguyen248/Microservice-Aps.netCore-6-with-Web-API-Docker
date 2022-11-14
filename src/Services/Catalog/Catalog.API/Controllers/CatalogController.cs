@@ -1,7 +1,6 @@
 ﻿using Catalog.API.Entities;
 using Catalog.API.IRepository;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Catalog.API.Controllers
 {
@@ -15,16 +14,19 @@ namespace Catalog.API.Controllers
         {
             _productRepository = productRepository;
             _logger = logger;
+            
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
         {
             var products = await _productRepository.GetProducts();
+            
             _logger.LogInformation("Get all product successfull!");
             return Ok(products);
         }
-        [HttpGet("{id:length(24)}", Name = "GetProduct")]
+        [Route("{id:length(24)}", Name = "GetProduct")]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProductById(string id)
         {
             var product = await _productRepository.GetProductById(id);
@@ -37,9 +39,9 @@ namespace Catalog.API.Controllers
         }
         [Route("[action]/{category}", Name = "GetProductByCategory")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string categoryName)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string category)
         {
-            var products = await _productRepository.GetProductByCategory(categoryName);
+            var products = await _productRepository.GetProductByCategory(category);
             return Ok(products);
         }
         [HttpPost]

@@ -1,6 +1,7 @@
 ﻿using Catalog.API.Data;
 using Catalog.API.Entities;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Catalog.API.IRepository
@@ -8,24 +9,30 @@ namespace Catalog.API.IRepository
 
     public class ProductRepository : IProductRepository
     {
-        private readonly IMongoCollection<Product>   _productCollection;
-        public ProductRepository(IOptions<ProductStoreDatabaseSetting> productStoreDbSetting)
+        private readonly IProductContext _productContext;
+        readonly ILogger<ProductRepository> _productLog;
+        public ProductRepository(IProductContext productContext, ILogger<ProductRepository> productLog, IConfiguration configuration)
         {
-            var mongoClient = new MongoClient(productStoreDbSetting.Value.ConnectionString);
-            var mongoDataBaseName = mongoClient.GetDatabase(productStoreDbSetting.Value.DatabaseName);
-            _productCollection = mongoDataBaseName.GetCollection<Product>(productStoreDbSetting.Value.ProductsCollectionName);
+            _productLog = productLog;
+            _productLog.LogInformation("start conncetstring");
+
+            _productContext = productContext;
+            //bool isMongoLive = _productContext.Products.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+            
+            
+
 
         }
         public async Task CreateProduct(Product product)
         {
             
-            await _productCollection.InsertOneAsync(product);
+            await _productContext.Products.InsertOneAsync(product);
         }
 
         public async Task<bool> DeleteProduct(string id)
         {
             FilterDefinition<Product> deleteProduct = Builders<Product>.Filter.Eq(p => p.Id, id);
-            var deleteResult =  await _productCollection.DeleteOneAsync(deleteProduct);
+            var deleteResult =  await _productContext.Products.DeleteOneAsync(deleteProduct);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
         }
 
@@ -33,28 +40,42 @@ namespace Catalog.API.IRepository
         {
             FilterDefinition<Product> category = Builders<Product>.Filter.Eq(p => p.Category, categoryName);
 
-            return await _productCollection.Find(category).ToListAsync();
+            return await _productContext.Products.Find(category).ToListAsync();
         }
 
         public async Task<Product> GetProductById(string id)
         {
-            return await _productCollection.Find(p=> p.Id == id).FirstOrDefaultAsync();
+            
+            return await _productContext.Products.Find(p=> p.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Product>> GetProductByName(string name)
         {
             FilterDefinition<Product> filter = Builders<Product>.Filter.Eq(p => p.Name, name);
-            return await _productCollection.Find(filter).ToListAsync();
+            return await _productContext.Products.Find(filter).ToListAsync();
         }
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            return await _productCollection.Find(p=>true).ToListAsync();
+            try
+            {
+                _productLog.LogInformation("start");
+                DatabaseSeeding.SeedData(_productContext.Products);
+                var products = await _productContext.Products.Find(p => true).ToListAsync();
+                return products;
+            }
+            catch (Exception err)
+            {
+                _productLog.LogError(err.Message);
+                throw;
+            }
+            //DatabaseSeeding.SeedData(_productCollection);
+            
         }
 
         public async Task<bool> UpdateProduct(Product product)
         {
-            var updateProduct = await _productCollection.ReplaceOneAsync(filter:g=>g.Id == product.Id,replacement:product);
+            var updateProduct = await _productContext.Products.ReplaceOneAsync(filter:g=>g.Id == product.Id,replacement:product);
             return updateProduct.IsAcknowledged && updateProduct.ModifiedCount > 0;
         }
     }
