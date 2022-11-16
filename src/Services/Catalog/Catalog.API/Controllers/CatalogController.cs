@@ -22,7 +22,6 @@ namespace Catalog.API.Controllers
         {
             var products = await _productRepository.GetProducts();
             
-            _logger.LogInformation("Get all product successfull!");
             return Ok(products);
         }
         [Route("{id:length(24)}", Name = "GetProduct")]
