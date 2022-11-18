@@ -12,25 +12,18 @@ namespace Catalog.API.IRepository
         public ProductRepository(IProductContext productContext, ILogger<ProductRepository> productLog, IConfiguration configuration)
         {
             _productLog = productLog;
-            _productLog.LogInformation("start conncetstring");
-
             _productContext = productContext;
-            //bool isMongoLive = _productContext.Products.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-            
-            
-
-
         }
         public async Task CreateProduct(Product product)
         {
-            
+
             await _productContext.Products.InsertOneAsync(product);
         }
 
         public async Task<bool> DeleteProduct(string id)
         {
             FilterDefinition<Product> deleteProduct = Builders<Product>.Filter.Eq(p => p.Id, id);
-            var deleteResult =  await _productContext.Products.DeleteOneAsync(deleteProduct);
+            var deleteResult = await _productContext.Products.DeleteOneAsync(deleteProduct);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
         }
 
@@ -43,8 +36,8 @@ namespace Catalog.API.IRepository
 
         public async Task<Product> GetProductById(string id)
         {
-            
-            return await _productContext.Products.Find(p=> p.Id == id).FirstOrDefaultAsync();
+
+            return await _productContext.Products.Find(p => p.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Product>> GetProductByName(string name)
@@ -57,8 +50,8 @@ namespace Catalog.API.IRepository
         {
             try
             {
-                _productLog.LogInformation("start");
                 DatabaseSeeding.SeedData(_productContext.Products);
+
                 var products = await _productContext.Products.Find(p => true).ToListAsync();
                 return products;
             }
@@ -67,13 +60,11 @@ namespace Catalog.API.IRepository
                 _productLog.LogError(err.Message);
                 throw;
             }
-            //DatabaseSeeding.SeedData(_productCollection);
-            
         }
 
         public async Task<bool> UpdateProduct(Product product)
         {
-            var updateProduct = await _productContext.Products.ReplaceOneAsync(filter:g=>g.Id == product.Id,replacement:product);
+            var updateProduct = await _productContext.Products.ReplaceOneAsync(filter: g => g.Id == product.Id, replacement: product);
             return updateProduct.IsAcknowledged && updateProduct.ModifiedCount > 0;
         }
     }
