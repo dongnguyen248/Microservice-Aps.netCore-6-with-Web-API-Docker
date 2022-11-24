@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DiscountContext>(options =>
 {
+    var connectstring = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectString");
     options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectString"));
 });
 

@@ -15,27 +15,27 @@ namespace Discount.API.Controllers
             _discountRepository = discountRepository;
         }
         [HttpGet]
-        public async Task<ActionResult> GetDiscount(string productName)
+        public  ActionResult GetDiscount(string productName)
         {
-            //var discount = await _discountRepository.GetDiscount(productName);
-            return Ok();
+            var discount =  _discountRepository.GetDiscount(productName);
+            return Ok(discount);
         }
         [HttpPost]
         public async Task<ActionResult> CreateDiscount(Coupon coupon)
         {
-            //await _discountRepository.CreateDiscount(coupon);
+            await _discountRepository.CreateDiscount(coupon);
             return Ok();    
         }
         [HttpPut]
         public async Task<ActionResult> UpdateDiscount(Coupon coupon)
         {
-            //await _discountRepository.UpdateDiscount(coupon);
+            await _discountRepository.UpdateDiscount(coupon);
             return Ok();
         }
         [HttpDelete]
         public async Task<ActionResult> DeleteDiscount(string productName)
         {
-            //await _discountRepository.DeleteDiscount(productName);
+            await _discountRepository.DeleteDiscount(productName);
             return Ok();
         }
 
