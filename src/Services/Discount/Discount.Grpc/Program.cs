@@ -16,12 +16,8 @@ builder.Services.AddDbContext<DiscountContext>(options =>
     var connectstring = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectString");
     options.UseNpgsql(builder.Configuration.GetValue<string>("DatabaseSettings:ConnectString"));
 });
-builder.WebHost.ConfigureKestrel(options =>
-{
-    // Setup a HTTP/2 endpoint without TLS.
-    options.ListenLocalhost(5009, o => o.Protocols =
-          HttpProtocols.Http2);
-});
+
+
 builder.Services.AddAutoMapper(typeof(DiscountProfile));
 
 builder.Services.AddTransient<IDiscountRepository, DiscountRepository>();
