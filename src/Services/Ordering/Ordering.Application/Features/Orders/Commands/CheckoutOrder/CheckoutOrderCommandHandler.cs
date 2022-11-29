@@ -24,10 +24,10 @@ namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder
         }
         public async Task<int> Handle(CheckOutOrderCommand request, CancellationToken cancellationToken)
         {
-            var newOrder = await _orderRespository.AddAsync(_mapper.Map<Order>(request);
-            _logger.LogInformation($"Order {newOrder.id} is successfull createdd");
+            var newOrder = await _orderRespository.AddAsync(_mapper.Map<Order>(request));
+            _logger.LogInformation($"Order {newOrder.Id} is successfull createdd");
             await SendMail(newOrder);
-            return newOrder.id;
+            return newOrder.Id;
         }
 
         private async Task SendMail(Order newOrder)
