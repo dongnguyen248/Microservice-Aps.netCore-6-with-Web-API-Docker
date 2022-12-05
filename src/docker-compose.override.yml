@@ -14,6 +14,7 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
   discountdb:
     container_name: discountdb
     restart: always
@@ -25,7 +26,16 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
+
+  orderdb:
+    container_name: orderdb
+    environment:
+      MSSQL_SA_PASSWORD: "P@ssword"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+
   pgadmin:
     container_name: pgadmin
     environment:
@@ -91,3 +101,14 @@ services:
       - "8003:80"
 
     
+
+  ordering.api:
+    container_name: ordering.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      -  "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderData;User Id=sa;Password=P@ssword;Encrypt=false"  
+    depends_on:
+      - orderdb
+    ports:
+      - "8004:80"
+

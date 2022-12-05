@@ -4,13 +4,13 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Infrastructure.Persistence
 {
-    public class OrderContext:DbContext
+    public class OrderContext : DbContext
     {
-        public OrderContext(DbContextOptions<OrderContext> options):base(options)
+        public OrderContext(DbContextOptions<OrderContext> options) : base(options)
         {
 
         }
-       public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -30,5 +30,6 @@ namespace Ordering.Infrastructure.Persistence
             }
             return base.SaveChangesAsync(cancellationToken);
         }
+    }
 
 }

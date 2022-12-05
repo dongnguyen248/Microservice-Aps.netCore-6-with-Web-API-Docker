@@ -21,13 +21,13 @@ namespace Ordering.Application.Features.Orders.Commands.DeleteOrder
         }
         public async Task<Unit> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
         {
-          var oderToDelete = _orderRepository.GetByIdAsync(request.Id);
-            if (oderToDelete == null)
+          var orderToDelete = _orderRepository.GetByIdAsync(request.Id);
+            if (orderToDelete == null)
             {
                 throw new NotFoundException(nameof(Order), request.Id);
             }
-                await _orderRepository.DeleteAsync(oderToDelete.Id);
-            _logger.LogInformation($"Order {oderToDelete.Id} is successfully deleted.");
+                await _orderRepository.DeleteAsync(await orderToDelete);
+            _logger.LogInformation($"Order {orderToDelete.Id} is successfully deleted.");
             return Unit.Value;
         }
     }
